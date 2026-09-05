@@ -22,10 +22,27 @@
 <body>
   <div class="container">
     <header>
-      <h1>OWASP A10: Server-Side Request Forgery (Vulnerable Demo)</h1>
-      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating unrestricted remote URL fetching allowing attackers to access internal endpoints and credentials.</p>
+      <h1>OWASP A10:2025 Mishandling of Exceptional Conditions & SSRF (Vulnerable)</h1>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating fail-open authorization on unhandled exceptions (A10:2025) and unrestricted remote URL fetching (SSRF).</p>
     </header>
 
+    <!-- A10:2025 Primary Showcase -->
+    <div class="card">
+      <h2 style="font-size:1.1rem; color:#f87171;">A10:2025 Exploit: Mishandling Exceptional Conditions (Fail-Open Bypass)</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">When downstream checks fail or throw exceptions, developers mistakenly catch the error and "fail open" to prevent user disruption, granting elevated VIP privileges to attackers!</p>
+      
+      <label style="font-size:0.85rem; color:var(--muted);">User ID (enter 'error-trigger' to simulate microservice failure):</label>
+      <input id="userIdInput" value="error-trigger" />
+      
+      <button id="btn-eval" onclick="evaluateAccess()">Evaluate VIP Access</button>
+      
+      <div id="alert-failopen" class="alert">
+        🚨 VULNERABILITY CONFIRMED: System encountered an exception and FAILED OPEN, granting VIP authorization to an unverified user!
+      </div>
+      <div class="result" id="res-eval">// Evaluation result will appear here...</div>
+    </div>
+
+    <!-- Legacy / SSRF Showcase -->
     <div class="card">
       <h2 style="font-size:1.1rem;">SSRF Exploit: Fetch Internal Protected Credentials</h2>
       <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">The application fetches avatars from any URL without checking if the host is internal or loopback.</p>
@@ -43,6 +60,20 @@
   </div>
 
   <script>
+    async function evaluateAccess() {
+      const userId = document.getElementById("userIdInput").value;
+      const res = await fetch("/api/access/evaluate-vip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: userId })
+      });
+      const data = await res.json();
+      document.getElementById("res-eval").textContent = JSON.stringify(data, null, 2);
+      if (data.Role && data.Role.includes("FAIL_OPEN")) {
+        document.getElementById("alert-failopen").classList.add("active");
+      }
+    }
+
     async function fetchAvatar() {
       const url = document.getElementById("targetUrl").value;
       const res = await fetch("/api/avatar/fetch-remote", {

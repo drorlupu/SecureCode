@@ -21,154 +21,156 @@ app.UseCors();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// Question Bank for the Workshop
-var questions = new List<QuizQuestion>
-{
-    new(
-        1,
-        "Broken Object Level Authorization (IDOR)",
-        "A backend endpoint '/api/users/{id}' checks if the user is authenticated, then returns profile details for {id}. What is the primary vulnerability?",
-        new[] {
-            "SQL Injection in URL parameter",
-            "Broken Object Level Authorization (BOLA/IDOR)",
-            "Cross-Site Request Forgery (CSRF)",
-            "Distributed Denial of Service"
-        },
-        1, // B is correct
-        "Authentication proves WHO you are, not WHAT you own. Without checking 'resource.OwnerId == currentUserId', any logged-in user can access other users' data."
-    ),
-    new(
-        2,
-        "Trust Boundaries & Input Validation",
-        "Your frontend TypeScript code validates user input using Zod before calling the backend C# API. Is the backend safe from malicious payloads?",
-        new[] {
-            "Yes, because Zod validates input on the client",
-            "Yes, provided HTTPS encryption is active",
-            "No! The frontend is across an untrusted Trust Boundary",
-            "No, unless strict CORS is configured"
-        },
-        2, // C is correct
-        "Attackers can easily bypass frontend code using curl, Postman, or custom scripts. Frontend validation improves UX; backend validation enforces security!"
-    ),
-    new(
-        3,
-        "Cross-Site Scripting (XSS)",
-        "In a React application, a developer renders: <div dangerouslySetInnerHTML={{ __html: userBio }} />. What security control is missing?",
-        new[] {
-            "HTTPS transport encryption",
-            "DOM Sanitization (e.g. DOMPurify)",
-            "Cross-Origin Resource Sharing (CORS)",
-            "SQL Query Parameterization"
-        },
-        1, // B is correct
-        "Injecting raw HTML without DOM sanitization opens direct Stored or Reflected XSS. Always sanitize with trusted libraries like DOMPurify or avoid raw HTML injection."
-    ),
-    new(
-        4,
-        "Cryptographic Token Verification",
-        "A developer uses 'jwt.decode(token)' in a Node.js route to inspect the user's role and grant access. What is the fatal flaw?",
-        new[] {
-            "jwt.decode() parses payload without verifying signature",
-            "jwt.decode() is too slow for production APIs",
-            "jwt.decode() only functions in browser environments",
-            "jwt.decode() strips out custom role claims"
-        },
-        0, // A is correct
-        "'jwt.decode()' merely decodes base64 without cryptographic signature verification. Anyone can forge a token with role='admin'. Always use 'jwt.verify()'!"
-    ),
-    new(
-        5,
-        "Secure Cryptographic Randomness",
-        "You need to generate a password reset token in your application. Which approach is cryptographically secure?",
-        new[] {
-            "Math.random().toString(36)",
-            "crypto.randomBytes(32) / RandomNumberGenerator",
-            "Date.now().toString()",
-            "md5(username + Date.now())"
-        },
-        1, // B is correct
-        "Standard PRNGs like Math.random() and System.Random are deterministic and predictable. Only CSPRNGs (crypto.randomBytes, RandomNumberGenerator) provide true cryptographic entropy."
-    ),
-    new(
-        6,
-        "Software Supply Chain Security (SCA / Mend)",
-        "Mend (SCA) flags a Critical CVE in a transitive dependency that cannot immediately be bumped via its parent. What is the best engineering response?",
-        new[] {
-            "Delete package-lock.json and ignore the alert",
-            "Disable Mend in the CI/CD pipeline",
-            "Use package.json overrides / direct NuGet reference",
-            "Ignore the alert as long as the application builds"
-        },
-        2, // C is correct
-        "Package overrides (npm) and direct package references (.NET) pin transitive dependencies to patched versions immediately while keeping automated tests green!"
-    ),
-    new(
-        7,
-        "SQL Injection Defense",
-        "An API concatenates: \"SELECT * FROM Users WHERE Email = '\" + email + \"'\". An attacker enters ' OR '1'='1. What is the fundamental fix?",
-        new[] {
-            "Rely solely on Web Application Firewalls (WAF)",
-            "Parameterized Queries / Prepared Statements",
-            "Base64-encode the email parameter",
-            "Enable TLS/SSL encryption"
-        },
-        1, // B is correct
-        "Parameterized queries treat user input strictly as literal data rather than executable SQL syntax, completely neutralizing SQL injection."
-    ),
-    new(
-        8,
-        "Server-Side Request Forgery (SSRF)",
-        "An endpoint accepts a user-provided image URL to download avatars. An attacker passes 'http://169.254.169.254/latest/meta-data'. What is this attack?",
-        new[] {
-            "Server-Side Request Forgery (SSRF)",
-            "Cross-Site Request Forgery (CSRF)",
-            "Reflected Cross-Site Scripting (XSS)",
-            "Clickjacking / UI Redressing"
-        },
-        0, // A is correct
-        "SSRF tricks the backend server into sending unauthorized requests to internal resources, loopback addresses (127.0.0.1), or cloud metadata services (169.254.169.254)."
-    )
-};
-
 // REST API
-app.MapGet("/api/quiz/questions", () => Results.Ok(questions));
-app.MapGet("/api/quiz/health", () => Results.Ok(new { Status = "Healthy", App = "KahootCloneSecurityQuiz" }));
+app.MapGet("/api/quiz/questions", () => Results.Ok(QuizBank.Questions));
+app.MapGet("/api/quiz/health", () => Results.Ok(new { Status = "Healthy", App = "KahootCloneSecurityQuiz", Standard = "OWASP Top 10:2025" }));
 
 // SignalR Hub
 app.MapHub<QuizHub>("/quizhub");
 
 app.Run();
 
+public static class QuizBank
+{
+    public static readonly List<QuizQuestion> Questions = new()
+    {
+        new(
+            1,
+            "A01:2025 – Broken Access Control & SSRF",
+            "In OWASP 2025, where is Server-Side Request Forgery (SSRF) categorized alongside BOLA/IDOR?",
+            new[] {
+                "Under Injection",
+                "Consolidated into Broken Access Control",
+                "Under Insecure Design",
+                "Under Cryptographic Failures"
+            },
+            1, // B is correct
+            "In OWASP Top 10:2025, SSRF is consolidated into A01: Broken Access Control because it is fundamentally a failure of boundary access control."
+        ),
+        new(
+            2,
+            "A02:2025 – Security Misconfiguration",
+            "Security Misconfiguration rose to #2 in OWASP 2025. What is the most severe cloud/API misconfiguration?",
+            new[] {
+                "Using dark mode theme",
+                "Exposing unhandled stack traces & wildcard CORS with credentials",
+                "Writing unit tests in TypeScript",
+                "Enabling HTTPS port 443"
+            },
+            1, // B is correct
+            "Exposing internal stack traces leaks system internals, while wildcard CORS with credentials allows attackers to hijack sensitive user sessions."
+        ),
+        new(
+            3,
+            "A03:2025 – Software Supply Chain Failures",
+            "A03:2025 expands beyond vulnerable libraries. Which scenario represents a Software Supply Chain Failure?",
+            new[] {
+                "Compromised build pipeline (CI/CD) injecting malicious code into released packages",
+                "Slow database query execution",
+                "Writing code without comments",
+                "Using CSS flexbox instead of grid"
+            },
+            0, // A is correct
+            "A03:2025 encompasses the full supply chain: compromised build systems, typosquatted package registries, unverified dependencies, and CI/CD pipelines."
+        ),
+        new(
+            4,
+            "A04:2025 – Cryptographic Failures",
+            "A developer stores user passwords using MD5 and encrypts tokens using DES in ECB mode. What is required?",
+            new[] {
+                "Base64 encoding is sufficient",
+                "Upgrade to salted Argon2id/PBKDF2 and authenticated AES-256-GCM",
+                "Double-MD5 hashing with math.random",
+                "No change if running over TLS"
+            },
+            1, // B is correct
+            "MD5 and DES/ECB are completely broken. Modern systems require salted slow key-derivation (Argon2id/PBKDF2) and authenticated encryption (AES-256-GCM)."
+        ),
+        new(
+            5,
+            "A05:2025 – Injection",
+            "An API builds queries via string interpolation: \"SELECT * FROM Users WHERE Email = '\" + email + \"'\". What is the definitive fix?",
+            new[] {
+                "Escape single quotes manually with regex",
+                "Strict Parameterized Queries / Prepared Statements",
+                "Base64 encode the email",
+                "Use Web Application Firewall only"
+            },
+            1, // B is correct
+            "Parameterized queries ensure the database engine treats input strictly as data parameters, making SQL injection impossible."
+        ),
+        new(
+            6,
+            "A06:2025 – Insecure Design",
+            "A web checkout endpoint permits users to apply the same 20% discount coupon in a loop until total price is $0. What is this?",
+            new[] {
+                "Cross-Site Scripting (XSS)",
+                "Buffer Overflow",
+                "Insecure Design (Business Logic Flaw)",
+                "Cryptographic Salt Failure"
+            },
+            2, // C is correct
+            "Insecure Design covers business logic flaws and architectural omissions that cannot be fixed by syntax-level patches alone."
+        ),
+        new(
+            7,
+            "A07:2025 – Authentication Failures",
+            "An authentication endpoint allows 100,000 rapid password guesses without delay or lockout. Which defense is essential?",
+            new[] {
+                "CORS header configuration",
+                "Rate Limiting & Account Lockout Policies",
+                "HTML entity encoding",
+                "Database indexing"
+            },
+            1, // B is correct
+            "A07:2025 covers authentication weaknesses; rate limiting and progressive lockouts are vital against brute-force and credential stuffing."
+        ),
+        new(
+            8,
+            "A08:2025 – Software and Data Integrity Failures",
+            "An application deserializes arbitrary object streams from untrusted HTTP headers using BinaryFormatter. What is the risk?",
+            new[] {
+                "High network latency",
+                "Remote Code Execution (RCE) via gadget chains",
+                "CSS styling layout shifts",
+                "DNS lookup timeout"
+            },
+            1, // B is correct
+            "Insecure deserialization allows arbitrary code execution. Modern applications must use type-safe JSON serializers without polymorphic object types."
+        ),
+        new(
+            9,
+            "A09:2025 – Security Logging & Alerting Failures",
+            "OWASP 2025 elevated A09 to include active Alerting. What is a key failure in this category?",
+            new[] {
+                "Swallowing failed authentication exceptions silently without triggering SIEM alerts",
+                "Logging to stdout in local development",
+                "Using log level Info instead of Debug",
+                "Using Winston or Serilog"
+            },
+            0, // A is correct
+            "A09:2025 emphasizes that logs alone are insufficient—failures must actively alert SIEM and incident response systems to prevent protracted attacker dwell time."
+        ),
+        new(
+            10,
+            "A10:2025 – Mishandling of Exceptional Conditions",
+            "Brand new in 2025: When an authorization microservice throws an unexpected timeout exception, the code catches it and grants admin access. What is this flaw?",
+            new[] {
+                "Failing Open (Insecure Default on Exception)",
+                "Failing Closed",
+                "Cryptographic Salting",
+                "Thread pooling error"
+            },
+            0, // A is correct
+            "Failing Open is a critical A10:2025 flaw: when errors occur, systems must fail securely ('Fail-Closed'), denying access rather than defaulting to permissive states."
+        )
+    };
+}
+
 public class QuizHub : Hub
 {
     private static readonly ConcurrentDictionary<string, QuizRoom> Rooms = new();
-    private static readonly List<QuizQuestion> QuestionBank = new()
-    {
-        new(1, "Access Control", "A backend endpoint '/api/users/{id}' checks if the user is authenticated, then returns profile details for {id}. What is the primary vulnerability?",
-            new[] { "SQL Injection", "Broken Object Level Authorization (BOLA/IDOR)", "CSRF", "DDoS" }, 1,
-            "Authentication proves WHO you are, not WHAT you own. Resource ownership must be checked server-side."),
-        new(2, "Trust Boundaries", "Your frontend TypeScript code validates user input using Zod before calling the backend C# API. Is the backend safe from malicious payloads?",
-            new[] { "Yes, validated on client", "Yes, if HTTPS is on", "No! Frontend is across an untrusted Trust Boundary", "No, unless strict CORS is configured" }, 2,
-            "Attackers easily bypass frontend code using curl or Postman. Backend validation enforces security."),
-        new(3, "XSS Defense", "In a React application, a developer renders: <div dangerouslySetInnerHTML={{ __html: userBio }} />. What security control is missing?",
-            new[] { "HTTPS encryption", "DOM Sanitization (e.g. DOMPurify)", "CORS headers", "SQL Parameterization" }, 1,
-            "Inserting raw HTML without DOM sanitization opens direct XSS. Always sanitize user markup."),
-        new(4, "Token Verification", "A developer uses 'jwt.decode(token)' in a Node.js route to inspect the user's role and grant access. What is the fatal flaw?",
-            new[] { "jwt.decode() parses payload without verifying signature", "jwt.decode() is too slow", "jwt.decode() only works in browser", "jwt.decode() strips claims" }, 0,
-            "'jwt.decode()' decodes base64 without cryptographic signature verification. Always use 'jwt.verify()'."),
-        new(5, "Cryptographic Entropy", "You need to generate a password reset token in your application. Which approach is cryptographically secure?",
-            new[] { "Math.random().toString(36)", "crypto.randomBytes(32) / RandomNumberGenerator", "Date.now().toString()", "md5(username + Date.now())" }, 1,
-            "Pseudo-random generators are deterministic and predictable. Only CSPRNGs provide cryptographic entropy."),
-        new(6, "Supply Chain (SCA)", "Mend (SCA) flags a Critical CVE in a transitive dependency that cannot immediately be bumped via its parent. What is the best engineering response?",
-            new[] { "Delete lockfile", "Disable Mend in CI", "Use package.json overrides / direct NuGet reference", "Ignore if code compiles" }, 2,
-            "Package overrides pin transitive dependencies to patched versions immediately while keeping automated tests green."),
-        new(7, "SQL Injection", "An API concatenates: \"SELECT * FROM Users WHERE Email = '\" + email + \"'\". An attacker enters ' OR '1'='1. What is the fundamental fix?",
-            new[] { "WAF only", "Parameterized Queries / Prepared Statements", "Base64-encode input", "SSL encryption" }, 1,
-            "Parameterized queries treat user input strictly as literal values, never executable syntax."),
-        new(8, "SSRF Protection", "An endpoint accepts a user-provided image URL to download avatars. An attacker passes 'http://169.254.169.254/latest/meta-data'. What is this attack?",
-            new[] { "Server-Side Request Forgery (SSRF)", "CSRF", "Reflected XSS", "Clickjacking" }, 0,
-            "SSRF tricks the backend server into sending requests to internal resources, loopback addresses, or cloud metadata.")
-    };
+    private static readonly List<QuizQuestion> QuestionBank = QuizBank.Questions;
 
     public Task<bool> VerifyHostPassword(string password)
     {

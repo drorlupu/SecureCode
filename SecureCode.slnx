@@ -2,20 +2,20 @@
   <Folder Name="/01-BrokenAccessControl/">
     <Project Path="01-BrokenAccessControl/BrokenAccessControl.csproj" />
   </Folder>
-  <Folder Name="/02-CryptographicFailures/">
-    <Project Path="02-CryptographicFailures/CryptographicFailures.csproj" />
+  <Folder Name="/02-SecurityMisconfiguration/">
+    <Project Path="02-SecurityMisconfiguration/SecurityMisconfiguration.csproj" />
   </Folder>
-  <Folder Name="/03-Injection/">
-    <Project Path="03-Injection/Injection.csproj" />
+  <Folder Name="/03-SoftwareSupplyChainFailures/">
+    <Project Path="03-SoftwareSupplyChainFailures/SoftwareSupplyChainFailures.csproj" />
   </Folder>
-  <Folder Name="/04-InsecureDesign/">
-    <Project Path="04-InsecureDesign/InsecureDesign.csproj" />
+  <Folder Name="/04-CryptographicFailures/">
+    <Project Path="04-CryptographicFailures/CryptographicFailures.csproj" />
   </Folder>
-  <Folder Name="/05-SecurityMisconfiguration/">
-    <Project Path="05-SecurityMisconfiguration/SecurityMisconfiguration.csproj" />
+  <Folder Name="/05-Injection/">
+    <Project Path="05-Injection/Injection.csproj" />
   </Folder>
-  <Folder Name="/06-VulnerableAndOutdatedComponents/">
-    <Project Path="06-VulnerableAndOutdatedComponents/VulnerableAndOutdatedComponents.csproj" />
+  <Folder Name="/06-InsecureDesign/">
+    <Project Path="06-InsecureDesign/InsecureDesign.csproj" />
   </Folder>
   <Folder Name="/07-AuthFailures/">
     <Project Path="07-AuthFailures/AuthFailures.csproj" />
@@ -23,30 +23,30 @@
   <Folder Name="/08-SoftwareAndDataIntegrityFailures/">
     <Project Path="08-SoftwareAndDataIntegrityFailures/SoftwareAndDataIntegrityFailures.csproj" />
   </Folder>
-  <Folder Name="/09-LoggingAndMonitoringFailures/">
-    <Project Path="09-LoggingAndMonitoringFailures/LoggingAndMonitoringFailures.csproj" />
+  <Folder Name="/09-LoggingAndAlertingFailures/">
+    <Project Path="09-LoggingAndAlertingFailures/LoggingAndAlertingFailures.csproj" />
   </Folder>
-  <Folder Name="/10-ServerSideRequestForgery/">
-    <Project Path="10-ServerSideRequestForgery/ServerSideRequestForgery.csproj" />
+  <Folder Name="/10-MishandlingOfExceptionalConditions/">
+    <Project Path="10-MishandlingOfExceptionalConditions/MishandlingOfExceptionalConditions.csproj" />
   </Folder>
   <Folder Name="/Fixed/" />
   <Folder Name="/Fixed/01-BrokenAccessControl/">
     <Project Path="Fixed/01-BrokenAccessControl/BrokenAccessControl.Fixed.csproj" />
   </Folder>
-  <Folder Name="/Fixed/02-CryptographicFailures/">
-    <Project Path="Fixed/02-CryptographicFailures/CryptographicFailures.Fixed.csproj" />
+  <Folder Name="/Fixed/02-SecurityMisconfiguration/">
+    <Project Path="Fixed/02-SecurityMisconfiguration/SecurityMisconfiguration.Fixed.csproj" />
   </Folder>
-  <Folder Name="/Fixed/03-Injection/">
-    <Project Path="Fixed/03-Injection/Injection.Fixed.csproj" />
+  <Folder Name="/Fixed/03-SoftwareSupplyChainFailures/">
+    <Project Path="Fixed/03-SoftwareSupplyChainFailures/SoftwareSupplyChainFailures.Fixed.csproj" />
   </Folder>
-  <Folder Name="/Fixed/04-InsecureDesign/">
-    <Project Path="Fixed/04-InsecureDesign/InsecureDesign.Fixed.csproj" />
+  <Folder Name="/Fixed/04-CryptographicFailures/">
+    <Project Path="Fixed/04-CryptographicFailures/CryptographicFailures.Fixed.csproj" />
   </Folder>
-  <Folder Name="/Fixed/05-SecurityMisconfiguration/">
-    <Project Path="Fixed/05-SecurityMisconfiguration/SecurityMisconfiguration.Fixed.csproj" />
+  <Folder Name="/Fixed/05-Injection/">
+    <Project Path="Fixed/05-Injection/Injection.Fixed.csproj" />
   </Folder>
-  <Folder Name="/Fixed/06-VulnerableAndOutdatedComponents/">
-    <Project Path="Fixed/06-VulnerableAndOutdatedComponents/VulnerableAndOutdatedComponents.Fixed.csproj" />
+  <Folder Name="/Fixed/06-InsecureDesign/">
+    <Project Path="Fixed/06-InsecureDesign/InsecureDesign.Fixed.csproj" />
   </Folder>
   <Folder Name="/Fixed/07-AuthFailures/">
     <Project Path="Fixed/07-AuthFailures/AuthFailures.Fixed.csproj" />
@@ -54,11 +54,11 @@
   <Folder Name="/Fixed/08-SoftwareAndDataIntegrityFailures/">
     <Project Path="Fixed/08-SoftwareAndDataIntegrityFailures/SoftwareAndDataIntegrityFailures.Fixed.csproj" />
   </Folder>
-  <Folder Name="/Fixed/09-LoggingAndMonitoringFailures/">
-    <Project Path="Fixed/09-LoggingAndMonitoringFailures/LoggingAndMonitoringFailures.Fixed.csproj" />
+  <Folder Name="/Fixed/09-LoggingAndAlertingFailures/">
+    <Project Path="Fixed/09-LoggingAndAlertingFailures/LoggingAndAlertingFailures.Fixed.csproj" />
   </Folder>
-  <Folder Name="/Fixed/10-ServerSideRequestForgery/">
-    <Project Path="Fixed/10-ServerSideRequestForgery/ServerSideRequestForgery.Fixed.csproj" />
+  <Folder Name="/Fixed/10-MishandlingOfExceptionalConditions/">
+    <Project Path="Fixed/10-MishandlingOfExceptionalConditions/MishandlingOfExceptionalConditions.Fixed.csproj" />
   </Folder>
   <Folder Name="/MasterApp/">
     <Project Path="MasterApp/MasterApp.csproj" />

@@ -81,7 +81,43 @@ app.MapPost("/api/avatar/fetch-remote", async (IHttpClientFactory clientFactory,
     }
 });
 
+// =========================================================================================
+// REMEDIATION: Mishandling of Exceptional Conditions (OWASP A10:2025 / Fail-Closed)
+// When downstream microservices fail or throw unexpected exceptions, the system MUST
+// fail closed (deny access), emit structured ProblemDetails, and avoid granting privilege.
+// =========================================================================================
+app.MapPost("/api/access/evaluate-vip", (VipAccessRequest request) =>
+{
+    try
+    {
+        if (request.UserId == "error-trigger" || string.IsNullOrEmpty(request.UserId))
+        {
+            throw new TimeoutException("Billing & Subscription Microservice unavailable or timed out");
+        }
+
+        bool isVip = request.UserId == "vip-user";
+        return Results.Ok(new { Allowed = isVip, Role = isVip ? "VIP" : "Standard", Note = "Normal evaluation completed." });
+    }
+    catch (TimeoutException)
+    {
+        // SECURE: Fail closed with HTTP 503 ProblemDetails, strictly denying access!
+        return Results.Problem(
+            detail: "Downstream authorization verification is temporarily unavailable. Access denied under Fail-Closed policy.",
+            statusCode: StatusCodes.Status503ServiceUnavailable,
+            title: "Verification Service Unavailable");
+    }
+    catch (Exception)
+    {
+        // SECURE: General catch boundary also fails closed
+        return Results.Problem(
+            detail: "An unexpected system error occurred during access verification. Access denied.",
+            statusCode: StatusCodes.Status500InternalServerError,
+            title: "Access Evaluation Error");
+    }
+});
+
 app.Run();
+
 
 static bool IsRestrictedInternalIp(IPAddress ip)
 {
@@ -121,3 +157,5 @@ static bool IsRestrictedInternalIp(IPAddress ip)
 }
 
 public record AvatarFetchRequest(string ImageUrl);
+public record VipAccessRequest(string UserId);
+

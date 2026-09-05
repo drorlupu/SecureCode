@@ -283,26 +283,26 @@ Security is an ongoing engineering discipline, not a one-time lecture.
   
   <div style="background: rgba(129, 140, 248, 0.15); border: 2px dashed #818cf8; border-radius: 14px; padding: 1.2rem; max-width: 580px; margin: 0 auto;">
     <p style="font-size: 1.3em; font-weight: 800; color: #fff; margin-bottom: 0.6rem;">
-      👉 <a href="http://localhost:5060" target="_blank" style="color: #38bdf8; text-decoration: underline;">Launch Security Quiz App (Port 5060)</a>
+      👉 <a href="http://localhost:5055" target="_blank" style="color: #38bdf8; text-decoration: underline;">Launch Security Quiz App (Port 5055)</a>
     </p>
     <p style="font-size: 1.0em; color: #cbd5e1; margin-bottom: 0.2rem;">Or via Master App: <a href="http://localhost:5050/quiz/" target="_blank" style="color: #a855f7;">http://localhost:5050/quiz/</a></p>
-    <p style="font-size: 0.95em; color: #94a3b8; margin-top: 0.4rem;">Room PIN: <strong>849 201</strong> • Presentation & Player Controller Modes</p>
+    <p style="font-size: 0.95em; color: #94a3b8; margin-top: 0.4rem;">Room PIN: <strong>849 201</strong> • Speed Scoring • Shape/Color Cards • Host Controls</p>
   </div>
   
-  <p style="color: #94a3b8; font-size: 0.85em; margin-top: 1.2rem;">Topics: BOLA/IDOR, Trust Boundaries, XSS Sanitization, Cryptographic PRNG, SCA Overrides & SSRF.</p>
+  <p style="color: #94a3b8; font-size: 0.85em; margin-top: 1.2rem;">Topics: SSRF & IDOR (A01), Misconfiguration (A02), Supply Chain (A03), Cryptography (A04), Injection (A05), Insecure Design (A06), Auth (A07), Integrity (A08), SIEM Alerting (A09), Fail-Open Handling (A10).</p>
 </div>
 
 ---
 
 <!-- _class: lead -->
 # 🚀 Hands-On: Master Security Application
-### Interactive Vulnerability & Remediation Orchestration Suite
+### Interactive Vulnerability & Remediation Orchestration Suite (OWASP Top 10:2025)
 
 ---
 
 ## 🛡️ Master Application Live Demonstration
 
-Experience all 10 OWASP categories live with real-time exploit testing & defense verification:
+Experience all 10 OWASP Top 10 (2025) categories live with real-time exploit testing & defense verification:
 
 - 🌐 **Open Master App:** [**http://localhost:5050**](http://localhost:5050)
 - **Features in Dashboard:**
@@ -317,27 +317,28 @@ Experience all 10 OWASP categories live with real-time exploit testing & defense
 
 ---
 
-## 📚 Appendix: OWASP Top 10 (Part 1: A01 - A05)
+## 📚 Appendix: OWASP Top 10 (2025) (Part 1: A01 - A05)
 
-| OWASP (2021) | Key Risk Area | Primary Defensive Mitigation |
+| OWASP (2025) | Key Risk Area | Primary Defensive Mitigation |
 | :--- | :--- | :--- |
-| **A01: Broken Access Control** | IDOR / Missing AuthZ / Mass-Assignment | Server-side resource ownership checks (`OwnerId == currentUserId`) |
-| **A02: Cryptographic Failures** | Exposed secrets / weak MD5 / legacy DES | Salted PBKDF2 / Argon2id, Key Vault, AES-256-GCM |
-| **A03: Injection** | SQLi, Command Injection | Parameterized SQL queries (`@param`), safe native APIs |
-| **A04: Insecure Design** | Architecture flaws / logic bypass | Threat modeling, atomic single-use constraints, rate limits |
-| **A05: Security Misconfiguration** | Verbose stack traces, wildcard CORS | Environment error handling, strict CORS whitelists, CSP headers |
+| **A01:2025 – Broken Access Control** | IDOR / Missing AuthZ / SSRF / Mass-Assignment | Resource ownership checks (`OwnerId == currentUserId`), strict IP egress filters, DTOs |
+| **A02:2025 – Security Misconfiguration** | Rose to #2: Stack trace leaks, permissive CORS | RFC 7807 ProblemDetails, environment error boundaries, strict CORS whitelists, CSP |
+| **A03:2025 – Software Supply Chain Failures** | Pipeline risks, typosquatting, unpinned packages | Automated SCA scanning (Mend), `<NuGetAudit>true</NuGetAudit>`, package pinning |
+| **A04:2025 – Cryptographic Failures** | Moved to #4: Weak hashing (MD5), legacy DES/ECB | Salted PBKDF2 / Argon2id, Key Vault, authenticated AES-256-GCM |
+| **A05:2025 – Injection** | Moved to #5: SQLi, OS Command Injection | Parameterized SQL queries (`@param`), safe native .NET APIs, input validation |
 
 ---
 
-## 📚 Appendix: OWASP Top 10 (Part 2: A06 - A10)
+## 📚 Appendix: OWASP Top 10 (2025) (Part 2: A06 - A10)
 
-| OWASP (2021) | Key Risk Area | Primary Defensive Mitigation |
+| OWASP (2025) | Key Risk Area | Primary Defensive Mitigation |
 | :--- | :--- | :--- |
-| **A06: Vulnerable Components** | Known CVEs in outdated packages | Automated SCA scanning (Mend), `<NuGetAudit>true</NuGetAudit>` |
-| **A07: Identification & Auth** | Credential stuffing, weak passwords | Rate limiting, account lockout policies, strong password rules |
-| **A08: Software & Data Integrity** | Insecure deserialization / untrusted code | Typed JSON serialization, HMAC-SHA256 signature verification |
-| **A09: Logging & Monitoring** | Leaked secrets in logs, silent swallow | Redacted/masked telemetry, structured security audit alerts |
-| **A10: SSRF** | Unvalidated remote URL requests | Host DNS resolution, strict blocking of loopback & cloud metadata |
+| **A06:2025 – Insecure Design** | Moved to #6: Business logic flaws, coupon abuse | Threat modeling, atomic single-use constraints, server-authoritative pricing |
+| **A07:2025 – Authentication Failures** | Credential stuffing, weak passwords, brute force | ASP.NET Core RateLimiting, account lockout policies, strong password rules |
+| **A08:2025 – Software & Data Integrity** | Insecure deserialization, unverified webhooks | Type-safe JSON serialization, HMAC-SHA256 signature verification |
+| **A09:2025 – Security Logging & Alerting** | Swallowed exceptions, missing SIEM alerts, leaked PII | Structured audit trails, sanitized telemetry, SIEM security alerts with correlation IDs |
+| **A10:2025 – Mishandling of Exceptional Conditions** | Brand New: Failing open on error, unhandled states | Fail-Closed security defaults, safe exception boundaries, structured error responses |
+
 
 ---
 

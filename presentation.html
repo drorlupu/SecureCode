@@ -3192,12 +3192,12 @@ section.kahoot {
   <p>Company-safe, 100% private interactive quiz to test defensive coding skills!</p>
   <div>
     <p>
-      👉 <a href="http://localhost:5060" target="_blank">Launch Security Quiz App (Port 5060)</a>
+      👉 <a href="http://localhost:5055" target="_blank">Launch Security Quiz App (Port 5055)</a>
     </p>
     <p>Or via Master App: <a href="http://localhost:5050/quiz/" target="_blank">http://localhost:5050/quiz/</a></p>
-    <p>Room PIN: <strong>849 201</strong> • Presentation & Player Controller Modes</p>
+    <p>Room PIN: <strong>849 201</strong> • Speed Scoring • Shape/Color Cards • Host Controls</p>
   </div>
-  <p>Topics: BOLA/IDOR, Trust Boundaries, XSS Sanitization, Cryptographic PRNG, SCA Overrides & SSRF.</p>
+  <p>Topics: SSRF & IDOR (A01), Misconfiguration (A02), Supply Chain (A03), Cryptography (A04), Injection (A05), Insecure Design (A06), Auth (A07), Integrity (A08), SIEM Alerting (A09), Fail-Open Handling (A10).</p>
 </div>
 <footer>Confidential - Internal Engineering Workshop</footer>
 </section>
@@ -3591,7 +3591,7 @@ section.kahoot {
 <header><img class="emoji" draggable="false" alt="🛡️" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/1f6e1.svg" data-marp-twemoji=""/> Secure Coding Workshop | C# &amp; TypeScript</header>
 
 <h1 id="%F0%9F%9A%80-hands-on-master-security-application"><img class="emoji" draggable="false" alt="🚀" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/1f680.svg" data-marp-twemoji=""/> Hands-On: Master Security Application</h1>
-<h3 id="interactive-vulnerability--remediation-orchestration-suite">Interactive Vulnerability &amp; Remediation Orchestration Suite</h3>
+<h3 id="interactive-vulnerability--remediation-orchestration-suite-owasp-top-102025">Interactive Vulnerability &amp; Remediation Orchestration Suite (OWASP Top 10:2025)</h3>
 <footer>Confidential - Internal Engineering Workshop</footer>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="10" data-class="invert" data-paginate="true" data-header="🛡️ Secure Coding Workshop | C# &amp; TypeScript" data-footer="Confidential - Internal Engineering Workshop" data-theme="default" data-style="/* Global Section Styling */
@@ -3983,7 +3983,7 @@ section.kahoot {
 ;" data-marpit-pagination-total="13">
 <header><img class="emoji" draggable="false" alt="🛡️" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/1f6e1.svg" data-marp-twemoji=""/> Secure Coding Workshop | C# &amp; TypeScript</header>
 <h2 id="%F0%9F%9B%A1%EF%B8%8F-master-application-live-demonstration"><img class="emoji" draggable="false" alt="🛡️" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/1f6e1.svg" data-marp-twemoji=""/> Master Application Live Demonstration</h2>
-<p>Experience all 10 OWASP categories live with real-time exploit testing &amp; defense verification:</p>
+<p>Experience all 10 OWASP Top 10 (2025) categories live with real-time exploit testing &amp; defense verification:</p>
 <ul>
 <li><img class="emoji" draggable="false" alt="🌐" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/1f310.svg" data-marp-twemoji=""/> <strong>Open Master App:</strong> <a href="http://localhost:5050"><strong>http://localhost:5050</strong></a></li>
 <li><strong>Features in Dashboard:</strong>
@@ -4388,40 +4388,40 @@ section.kahoot {
 }
 ;" data-marpit-pagination-total="13">
 <header><img class="emoji" draggable="false" alt="🛡️" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/1f6e1.svg" data-marp-twemoji=""/> Secure Coding Workshop | C# &amp; TypeScript</header>
-<h2 id="%F0%9F%93%9A-appendix-owasp-top-10-part-1-a01---a05"><img class="emoji" draggable="false" alt="📚" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/1f4da.svg" data-marp-twemoji=""/> Appendix: OWASP Top 10 (Part 1: A01 - A05)</h2>
+<h2 id="%F0%9F%93%9A-appendix-owasp-top-10-2025-part-1-a01---a05"><img class="emoji" draggable="false" alt="📚" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/1f4da.svg" data-marp-twemoji=""/> Appendix: OWASP Top 10 (2025) (Part 1: A01 - A05)</h2>
 <table>
 <thead>
 <tr>
-<th style="text-align:left">OWASP (2021)</th>
+<th style="text-align:left">OWASP (2025)</th>
 <th style="text-align:left">Key Risk Area</th>
 <th style="text-align:left">Primary Defensive Mitigation</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left"><strong>A01: Broken Access Control</strong></td>
-<td style="text-align:left">IDOR / Missing AuthZ / Mass-Assignment</td>
-<td style="text-align:left">Server-side resource ownership checks (<code>OwnerId == currentUserId</code>)</td>
+<td style="text-align:left"><strong>A01:2025 – Broken Access Control</strong></td>
+<td style="text-align:left">IDOR / Missing AuthZ / SSRF / Mass-Assignment</td>
+<td style="text-align:left">Resource ownership checks (<code>OwnerId == currentUserId</code>), strict IP egress filters, DTOs</td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>A02: Cryptographic Failures</strong></td>
-<td style="text-align:left">Exposed secrets / weak MD5 / legacy DES</td>
-<td style="text-align:left">Salted PBKDF2 / Argon2id, Key Vault, AES-256-GCM</td>
+<td style="text-align:left"><strong>A02:2025 – Security Misconfiguration</strong></td>
+<td style="text-align:left">Rose to #2: Stack trace leaks, permissive CORS</td>
+<td style="text-align:left">RFC 7807 ProblemDetails, environment error boundaries, strict CORS whitelists, CSP</td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>A03: Injection</strong></td>
-<td style="text-align:left">SQLi, Command Injection</td>
-<td style="text-align:left">Parameterized SQL queries (<code>@param</code>), safe native APIs</td>
+<td style="text-align:left"><strong>A03:2025 – Software Supply Chain Failures</strong></td>
+<td style="text-align:left">Pipeline risks, typosquatting, unpinned packages</td>
+<td style="text-align:left">Automated SCA scanning (Mend), <code>&lt;NuGetAudit&gt;true&lt;/NuGetAudit&gt;</code>, package pinning</td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>A04: Insecure Design</strong></td>
-<td style="text-align:left">Architecture flaws / logic bypass</td>
-<td style="text-align:left">Threat modeling, atomic single-use constraints, rate limits</td>
+<td style="text-align:left"><strong>A04:2025 – Cryptographic Failures</strong></td>
+<td style="text-align:left">Moved to #4: Weak hashing (MD5), legacy DES/ECB</td>
+<td style="text-align:left">Salted PBKDF2 / Argon2id, Key Vault, authenticated AES-256-GCM</td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>A05: Security Misconfiguration</strong></td>
-<td style="text-align:left">Verbose stack traces, wildcard CORS</td>
-<td style="text-align:left">Environment error handling, strict CORS whitelists, CSP headers</td>
+<td style="text-align:left"><strong>A05:2025 – Injection</strong></td>
+<td style="text-align:left">Moved to #5: SQLi, OS Command Injection</td>
+<td style="text-align:left">Parameterized SQL queries (<code>@param</code>), safe native .NET APIs, input validation</td>
 </tr>
 </tbody>
 </table>
@@ -4815,40 +4815,40 @@ section.kahoot {
 }
 ;" data-marpit-pagination-total="13">
 <header><img class="emoji" draggable="false" alt="🛡️" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/1f6e1.svg" data-marp-twemoji=""/> Secure Coding Workshop | C# &amp; TypeScript</header>
-<h2 id="%F0%9F%93%9A-appendix-owasp-top-10-part-2-a06---a10"><img class="emoji" draggable="false" alt="📚" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/1f4da.svg" data-marp-twemoji=""/> Appendix: OWASP Top 10 (Part 2: A06 - A10)</h2>
+<h2 id="%F0%9F%93%9A-appendix-owasp-top-10-2025-part-2-a06---a10"><img class="emoji" draggable="false" alt="📚" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/svg/1f4da.svg" data-marp-twemoji=""/> Appendix: OWASP Top 10 (2025) (Part 2: A06 - A10)</h2>
 <table>
 <thead>
 <tr>
-<th style="text-align:left">OWASP (2021)</th>
+<th style="text-align:left">OWASP (2025)</th>
 <th style="text-align:left">Key Risk Area</th>
 <th style="text-align:left">Primary Defensive Mitigation</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left"><strong>A06: Vulnerable Components</strong></td>
-<td style="text-align:left">Known CVEs in outdated packages</td>
-<td style="text-align:left">Automated SCA scanning (Mend), <code>&lt;NuGetAudit&gt;true&lt;/NuGetAudit&gt;</code></td>
+<td style="text-align:left"><strong>A06:2025 – Insecure Design</strong></td>
+<td style="text-align:left">Moved to #6: Business logic flaws, coupon abuse</td>
+<td style="text-align:left">Threat modeling, atomic single-use constraints, server-authoritative pricing</td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>A07: Identification &amp; Auth</strong></td>
-<td style="text-align:left">Credential stuffing, weak passwords</td>
-<td style="text-align:left">Rate limiting, account lockout policies, strong password rules</td>
+<td style="text-align:left"><strong>A07:2025 – Authentication Failures</strong></td>
+<td style="text-align:left">Credential stuffing, weak passwords, brute force</td>
+<td style="text-align:left">ASP.NET Core RateLimiting, account lockout policies, strong password rules</td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>A08: Software &amp; Data Integrity</strong></td>
-<td style="text-align:left">Insecure deserialization / untrusted code</td>
-<td style="text-align:left">Typed JSON serialization, HMAC-SHA256 signature verification</td>
+<td style="text-align:left"><strong>A08:2025 – Software &amp; Data Integrity</strong></td>
+<td style="text-align:left">Insecure deserialization, unverified webhooks</td>
+<td style="text-align:left">Type-safe JSON serialization, HMAC-SHA256 signature verification</td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>A09: Logging &amp; Monitoring</strong></td>
-<td style="text-align:left">Leaked secrets in logs, silent swallow</td>
-<td style="text-align:left">Redacted/masked telemetry, structured security audit alerts</td>
+<td style="text-align:left"><strong>A09:2025 – Security Logging &amp; Alerting</strong></td>
+<td style="text-align:left">Swallowed exceptions, missing SIEM alerts, leaked PII</td>
+<td style="text-align:left">Structured audit trails, sanitized telemetry, SIEM security alerts with correlation IDs</td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>A10: SSRF</strong></td>
-<td style="text-align:left">Unvalidated remote URL requests</td>
-<td style="text-align:left">Host DNS resolution, strict blocking of loopback &amp; cloud metadata</td>
+<td style="text-align:left"><strong>A10:2025 – Mishandling of Exceptional Conditions</strong></td>
+<td style="text-align:left">Brand New: Failing open on error, unhandled states</td>
+<td style="text-align:left">Fail-Closed security defaults, safe exception boundaries, structured error responses</td>
 </tr>
 </tbody>
 </table>

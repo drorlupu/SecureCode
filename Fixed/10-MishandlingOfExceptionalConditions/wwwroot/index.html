@@ -22,10 +22,27 @@
 <body>
   <div class="container">
     <header>
-      <h1>OWASP A10: Server-Side Request Forgery (Remediated Fixed Version)</h1>
-      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating IP address validation, RFC 1918 / loopback blocking, and content-type enforcement.</p>
+      <h1>OWASP A10:2025 Mishandling of Exceptional Conditions & SSRF (Remediated Fixed)</h1>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating fail-closed exception boundaries (A10:2025) and DNS-validated SSRF protections.</p>
     </header>
 
+    <!-- A10:2025 Primary Defense Showcase -->
+    <div class="card">
+      <h2 style="font-size:1.1rem; color:#4ade80;">A10:2025 Defense: Fail-Closed Exception Boundaries & Resilience</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">When downstream checks fail or throw exceptions, the system enforces a strict <strong>Fail-Closed</strong> boundary, denying access and returning an RFC 7807 ProblemDetails error without leaking stack traces or granting unearned privileges.</p>
+      
+      <label style="font-size:0.85rem; color:var(--muted);">User ID (enter 'error-trigger' to simulate microservice failure):</label>
+      <input id="userIdInput" value="error-trigger" />
+      
+      <button id="btn-eval" onclick="evaluateAccess()">Evaluate VIP Access</button>
+      
+      <div id="alert-failclosed" class="alert">
+        🛡️ REMEDIATION VERIFIED: System encountered an exception and FAILED CLOSED (HTTP 503 / Access Denied). No unauthorized privileges granted!
+      </div>
+      <div class="result" id="res-eval">// Evaluation result will appear here...</div>
+    </div>
+
+    <!-- Legacy / SSRF Showcase -->
     <div class="card">
       <h2 style="font-size:1.1rem;">SSRF Defense: Block Internal IP & Loopback Exploitation</h2>
       <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Attempting to fetch internal services or loopback IPs is intercepted and rejected with HTTP 403.</p>
@@ -43,6 +60,20 @@
   </div>
 
   <script>
+    async function evaluateAccess() {
+      const userId = document.getElementById("userIdInput").value;
+      const res = await fetch("/api/access/evaluate-vip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: userId })
+      });
+      const data = await res.json();
+      document.getElementById("res-eval").textContent = JSON.stringify(data, null, 2);
+      if (res.status === 503 || res.status === 500 || data.Allowed === false) {
+        document.getElementById("alert-failclosed").classList.add("active");
+      }
+    }
+
     async function fetchAvatar() {
       const url = document.getElementById("targetUrl").value;
       const res = await fetch("/api/avatar/fetch-remote", {

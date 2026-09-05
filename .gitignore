@@ -1,0 +1,115 @@
+## ==========================================
+## .NET / C# Build Artifacts
+## ==========================================
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.sln.docstates
+*.slnx.sqlite
+*.sln.ide
+
+# NuGet packages
+packages/
+*.nupkg
+*.snupkg
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.assets.json
+
+# Publish / Deploy output
+publish/
+*.azurePubxml
+*.pubxml
+*.publishproj
+
+## ==========================================
+## Node.js & NPM
+## ==========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+## ==========================================
+## Testing & Test Results
+## ==========================================
+TestResults/
+[Tt]est[Rr]esults/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+## ==========================================
+## Local Databases & App State
+## ==========================================
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+
+## ==========================================
+## Logs & Temporary Files
+## ==========================================
+*.log
+logs/
+*.tmp
+*.temp
+*.bak
+
+## ==========================================
+## Secrets & Environment Files
+## ==========================================
+.env
+.env.local
+.env.*.local
+*.secrets.json
+secrets.json
+appsettings.Local.json
+appsettings.Development.json
+
+## ==========================================
+## Operating System & IDE Files
+## ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+
+# Editors
+.idea/
+*.swp
+*.swo
+*~
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
