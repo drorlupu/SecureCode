@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OWASP A09: Logging & Monitoring Failures (Fixed)</title>
+  <style>
+    :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --muted: #94a3b8; --border: #334155; --success: #22c55e; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h1 { color: #4ade80; font-size: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    button { background: #16a34a; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 0.8rem; }
+    button:hover { background: #15803d; }
+    .result { background: #0b0f19; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; white-space: pre-wrap; word-break: break-all; }
+    .alert { padding: 0.75rem 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.85rem; font-weight: 600; background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #86efac; display: none; }
+    .alert.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>OWASP A09: Logging & Monitoring Failures (Remediated Fixed Version)</h1>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating sanitized audit logs without secret leaks, and structured incident correlation for suspicious violations.</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">1. Sanitized Credential Logging & Audit Trail</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Submits login credentials. Cleartext passwords and tokens are never logged; audit trail logs caller IP and masked identifiers.</p>
+      <button id="btn-login" onclick="testLogin()">Submit Secure Login</button>
+      <div id="alert-login" class="alert">
+        🛡️ REMEDIATION VERIFIED: Passwords and tokens excluded from logs. Structured audit trail generated with client telemetry!
+      </div>
+      <div class="result" id="res-login">// Login response...</div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">2. Security Incident Logging with Correlation ID</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Transfer exceeding limit raises security alert recorded in SIEM logs with unique correlation ID and returns standardized ProblemDetails.</p>
+      <button id="btn-transfer" onclick="testTransfer()">Trigger Suspicious Large Transfer</button>
+      <div id="alert-transfer" class="alert">
+        🛡️ REMEDIATION VERIFIED: Suspicious activity logged with error telemetry and unique Incident ID for immediate SIEM alerts!
+      </div>
+      <div class="result" id="res-transfer">// Transfer response...</div>
+    </div>
+  </div>
+
+  <script>
+    async function testLogin() {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: "admin", password: "P@ssword123" })
+      });
+      const data = await res.json();
+      document.getElementById("res-login").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-login").classList.add("active");
+    }
+
+    async function testTransfer() {
+      const res = await fetch("/api/funds/transfer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fromAccount: "ACC-01", toAccount: "ACC-99", amount: 50000 })
+      });
+      const data = await res.json();
+      document.getElementById("res-transfer").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-transfer").classList.add("active");
+    }
+  </script>
+</body>
+</html>

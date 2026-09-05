@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OWASP A01: Broken Access Control (REMEDIATED SECURE VERSION)</title>
+  <style>
+    :root {
+      --bg: #0b1329;
+      --card: #152238;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #243552;
+      --primary: #38bdf8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 2rem; min-height: 100vh; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 1.5rem; color: #34d399; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; margin-top: 0.3rem; }
+    .user-pill { background: #064e3b; color: #6ee7b7; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; border: 1px solid #059669; display: flex; align-items: center; gap: 0.5rem; }
+    select.user-select { background: #022c22; color: #a7f3d0; border: 1px solid #10b981; border-radius: 6px; padding: 0.2rem 0.5rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    h2 { font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem; }
+    .tag { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 6px; text-transform: uppercase; font-weight: 700; }
+    .tag-shield { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
+    p.desc { font-size: 0.88rem; color: var(--muted); line-height: 1.4; }
+    .input-group { display: flex; gap: 0.5rem; }
+    input { flex: 1; background: #0b1329; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 0.8rem; color: #fff; font-size: 0.85rem; font-family: monospace; }
+    button { background: #059669; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    button:hover { background: #047857; }
+    button.btn-test { background: #2563eb; }
+    button.btn-test:hover { background: #1d4ed8; }
+    .result-box { background: #070d1d; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-family: monospace; font-size: 0.85rem; min-height: 100px; white-space: pre-wrap; word-break: break-all; }
+    .alert-banner { display: none; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; line-height: 1.4; }
+    .alert-banner.active { display: block; }
+    .alert-defense { background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; }
+    .alert-authorized { background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #7dd3fc; }
+    .step-badge { font-weight: 700; color: #34d399; margin-right: 0.4rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>🛡️ Remediated: OWASP A01 Broken Access Control</h1>
+        <div class="subtitle">Defensive Security Verification & Countermeasure Demonstration</div>
+      </div>
+      <div class="user-pill">
+        <span>Active User:</span>
+        <select id="user-switcher" class="user-select" onchange="switchUser()">
+          <option value="alice" selected>Alice Smith (Role: User)</option>
+          <option value="admin">Administrator (Role: Admin)</option>
+          <option value="anonymous">Anonymous (No Auth)</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Section 1: Authorized Document Access -->
+      <div class="card">
+        <h2><span class="step-badge">1.</span> Authorized Document Retrieval</h2>
+        <p class="desc">Alice requests her own document with valid session claims.</p>
+        <div class="input-group">
+          <input type="text" id="alice-doc-id" value="11111111-1111-1111-1111-111111111111" readonly />
+          <button id="btn-fetch-alice" onclick="fetchDocument('alice-doc-id', 'res-alice', 'alert-alice')">View My Doc</button>
+        </div>
+        <div id="alert-alice" class="alert-banner alert-authorized">
+          ✅ AUTHORIZED: Document returned because <code>d.OwnerId == currentUserId</code> ("user-alice").
+        </div>
+        <div class="result-box" id="res-alice">// Result will appear here...</div>
+      </div>
+
+      <!-- Section 2: IDOR Defense -->
+      <div class="card">
+        <h2><span class="step-badge">2.</span> <span class="tag tag-shield">Remediated</span> IDOR Prevention</h2>
+        <p class="desc">Alice attempts to request Bob's document GUID. Server enforces owner check.</p>
+        <div class="input-group">
+          <input type="text" id="bob-doc-id" value="22222222-2222-2222-2222-222222222222" />
+          <button id="btn-fetch-bob" class="btn-test" onclick="fetchDocument('bob-doc-id', 'res-bob', 'alert-bob')">Attempt IDOR Fetch</button>
+        </div>
+        <div id="alert-bob" class="alert-banner alert-defense">
+          🛡️ DEFENSE SUCCESS: Access Denied! Server returned 404/Access Denied. Bob's record was not leaked because Alice does not own it.
+        </div>
+        <div class="result-box" id="res-bob">// Result will appear here...</div>
+      </div>
+
+      <!-- Section 3: Function-Level Access Control Defense -->
+      <div class="card">
+        <h2><span class="step-badge">3.</span> <span class="tag tag-shield">Remediated</span> Role Policy Enforcement</h2>
+        <p class="desc">Alice attempts to call administrative reset endpoint protected by <code>AdminOnly</code> policy.</p>
+        <button id="btn-admin-reset" class="btn-test" onclick="triggerAdminReset()">Attempt Admin Reset</button>
+        <div id="alert-admin" class="alert-banner alert-defense">
+          🛡️ DEFENSE SUCCESS: HTTP 403 Forbidden! The endpoint rejected Alice because she lacks the required 'Admin' role.
+        </div>
+        <div class="result-box" id="res-admin">// Result will appear here...</div>
+      </div>
+
+      <!-- Section 4: Mass-Assignment Neutralization -->
+      <div class="card">
+        <h2><span class="step-badge">4.</span> <span class="tag tag-shield">Remediated</span> Role Tampering Neutralized</h2>
+        <p class="desc">Alice submits <code>"Role": "Administrator"</code>. Server binds to <code>UpdateProfileDto</code>.</p>
+        <button id="btn-escalate" class="btn-test" onclick="escalatePrivileges()">Attempt Role Escalation</button>
+        <div id="alert-mass" class="alert-banner alert-defense">
+          🛡️ DEFENSE SUCCESS: Escalation Neutralized! Input DTO ignored the 'Role' property; Alice remains 'User'.
+        </div>
+        <div class="result-box" id="res-mass">// Result will appear here...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let activeUser = "alice";
+
+    function switchUser() {
+      activeUser = document.getElementById("user-switcher").value;
+      console.log("Switched active demo user to:", activeUser);
+    }
+
+    async function fetchDocument(inputId, resId, alertId) {
+      const id = document.getElementById(inputId).value;
+      const resEl = document.getElementById(resId);
+      const alertEl = document.getElementById(alertId);
+      resEl.textContent = "Fetching /api/documents/" + id + " as " + activeUser + "...";
+      try {
+        const response = await fetch("/api/documents/" + id, {
+          headers: { "X-User": activeUser }
+        });
+        const statusText = `HTTP ${response.status} ${response.statusText}\n`;
+        const data = await response.json();
+        resEl.textContent = statusText + JSON.stringify(data, null, 2);
+        alertEl.classList.add("active");
+      } catch (err) {
+        resEl.textContent = "Error: " + err.message;
+      }
+    }
+
+    async function triggerAdminReset() {
+      const resEl = document.getElementById("res-admin");
+      const alertEl = document.getElementById("alert-admin");
+      resEl.textContent = "Posting /api/admin/system-reset as " + activeUser + "...";
+      try {
+        const response = await fetch("/api/admin/system-reset", {
+          method: "POST",
+          headers: { "X-User": activeUser }
+        });
+        const statusText = `HTTP ${response.status} ${response.statusText}\n`;
+        let text = "";
+        try {
+          const data = await response.json();
+          text = JSON.stringify(data, null, 2);
+        } catch {
+          text = response.status === 403 ? "Forbidden: Policy requires 'Admin' role." : (response.status === 401 ? "Unauthorized." : "");
+        }
+        resEl.textContent = statusText + text;
+        alertEl.classList.add("active");
+      } catch (err) {
+        resEl.textContent = "Error: " + err.message;
+      }
+    }
+
+    async function escalatePrivileges() {
+      const resEl = document.getElementById("res-mass");
+      const alertEl = document.getElementById("alert-mass");
+      resEl.textContent = "Sending PUT /api/users/profile with injected Role: Administrator...";
+      try {
+        const payload = {
+          userId: "user-alice",
+          fullName: "Alice Smith",
+          email: "alice@example.com",
+          role: "Administrator" // Injected tampering attempt
+        };
+        const response = await fetch("/api/users/profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-User": activeUser
+          },
+          body: JSON.stringify(payload)
+        });
+        const statusText = `HTTP ${response.status} ${response.statusText}\n`;
+        const data = await response.json();
+        resEl.textContent = statusText + JSON.stringify(data, null, 2);
+        alertEl.classList.add("active");
+      } catch (err) {
+        resEl.textContent = "Error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>

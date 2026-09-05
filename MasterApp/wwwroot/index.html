@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OWASP Top 10 Security Lab - Master Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(23, 32, 51, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(30, 41, 69, 0.95);
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --success: #22c55e;
+      --success-hover: #16a34a;
+      --success-bg: rgba(34, 197, 94, 0.12);
+      --purple: #a855f7;
+      --purple-bg: rgba(168, 85, 247, 0.12);
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(at 15% 10%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
+        radial-gradient(at 85% 85%, rgba(168, 85, 247, 0.06) 0px, transparent 50%);
+    }
+
+    header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #0284c7, #9333ea);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+    }
+
+    .brand-title h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(to right, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-title p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-stop-all {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-stop-all:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: #86efac;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #22c55e;
+    }
+
+    main {
+      flex: 1;
+      padding: 2.5rem 2rem;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .banner {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.8));
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .banner-text h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .banner-text p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* TILES GRID */
+    .tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .tile {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .tile:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.4);
+      background: var(--card-hover);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .tile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+    }
+
+    .owasp-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+    }
+
+    .category-pill {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    .tile-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+
+    .tile-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 1.2rem;
+      flex: 1;
+    }
+
+    .tile-cwe {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: #64748b;
+      margin-bottom: 1rem;
+    }
+
+    .tile-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      margin-top: auto;
+      padding-top: 0.8rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-vuln {
+      background: var(--danger-bg);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 0.65rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn-vuln:hover {
+      background: var(--danger);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-fixed {
+      background: var(--success-bg);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+      padding: 0.65rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn-fixed:hover {
+      background: var(--success);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+    }
+
+    .btn-video {
+      grid-column: span 2;
+      background: rgba(168, 85, 247, 0.08);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      color: #d8b4fe;
+      padding: 0.45rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn-video:hover {
+      background: rgba(168, 85, 247, 0.25);
+      color: #fff;
+    }
+
+    /* MODAL / INTERNAL IFRAME VIEWER */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(5, 8, 15, 0.88);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-container {
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 1200px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      padding: 1rem 1.5rem;
+      background: #1e293b;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .modal-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .modal-title-group h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .mode-indicator {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    .mode-indicator.vuln {
+      background: var(--danger-bg);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .mode-indicator.fixed {
+      background: var(--success-bg);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .modal-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #0f172a;
+      padding: 0.25rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .modal-tab {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .modal-tab:hover {
+      color: #fff;
+    }
+
+    .modal-tab.active {
+      background: #334155;
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .modal-body {
+      flex: 1;
+      position: relative;
+      background: #090d16;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(9, 13, 22, 0.95);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      z-index: 10;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 42px;
+      height: 42px;
+      border: 3px solid rgba(56, 189, 248, 0.15);
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-msg {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #38bdf8;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #0f172a;
+      display: block;
+    }
+
+    .video-view {
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: #020408;
+      padding: 1.5rem;
+    }
+
+    .video-view.active {
+      display: flex;
+    }
+
+    video {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .details-view {
+      width: 100%;
+      height: 100%;
+      display: none;
+      padding: 2.5rem;
+      overflow-y: auto;
+      background: #0b1120;
+    }
+
+    .details-view.active {
+      display: block;
+    }
+
+    .details-section {
+      margin-bottom: 2rem;
+    }
+
+    .details-section h4 {
+      font-size: 1rem;
+      color: #38bdf8;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .details-section p {
+      color: #cbd5e1;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .code-box {
+      background: #020617;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      margin-top: 0.6rem;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🛡️</div>
+      <div class="brand-title">
+        <h1>OWASP Top 10 Security Lab - Master Dashboard</h1>
+        <p>Interactive Vulnerability & Remediation Orchestration Suite (.NET 10)</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="/quiz/" target="_blank" style="text-decoration: none; display: flex; align-items: center; gap: 0.4rem; background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); color: #e9d5ff; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; transition: all 0.2s;">
+        🎮 Security Quiz (Kahoot Clone)
+      </a>
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        <span id="system-status">System Ready</span>
+      </div>
+      <button class="btn-stop-all" onclick="stopAllServices()">🛑 Stop All Services</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="banner">
+      <div class="banner-text">
+        <h2>Vulnerability Exploration & Remediation Matrix</h2>
+        <p>Select any OWASP Top 10 module below to launch the vulnerable exploit demo or its secure remediated counterpart directly inside an integrated live iframe or view the automated Playwright recordings.</p>
+      </div>
+    </div>
+
+    <div class="tiles-grid" id="tiles-container">
+      <!-- Dynamically loaded modules -->
+    </div>
+  </main>
+
+  <!-- MODAL / INTERNAL IFRAME VIEWER -->
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="owasp-tag" id="modal-code">A01:2021</span>
+          <h3 id="modal-title">Broken Access Control</h3>
+          <span class="mode-indicator vuln" id="modal-mode-badge">🔴 VULNERABLE</span>
+        </div>
+
+        <div class="modal-tabs">
+          <button class="modal-tab active" id="tab-vuln" onclick="switchViewerTab('vuln')">
+            🔴 Live Vulnerable Demo
+          </button>
+          <button class="modal-tab" id="tab-fixed" onclick="switchViewerTab('fixed')">
+            🟢 Live Fixed Version
+          </button>
+          <button class="modal-tab" id="tab-video-vuln" onclick="switchViewerTab('video-vuln')">
+            🎬 Attack Video
+          </button>
+          <button class="modal-tab" id="tab-video-fixed" onclick="switchViewerTab('video-fixed')">
+            🛡️ Defense Video
+          </button>
+          <button class="modal-tab" id="tab-details" onclick="switchViewerTab('details')">
+            📖 Details
+          </button>
+        </div>
+
+        <div class="modal-actions">
+          <button class="icon-btn" title="Reload Iframe" onclick="reloadIframe()">🔄</button>
+          <a class="icon-btn" id="btn-external-link" title="Open in New Tab" target="_blank">↗️</a>
+          <button class="icon-btn" title="Close (Esc)" onclick="closeModal()">✕</button>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="loading-overlay" id="loading-overlay">
+          <div class="spinner"></div>
+          <div class="loading-msg" id="loading-msg">Spinning up .NET service...</div>
+        </div>
+
+        <iframe id="demo-iframe" src="about:blank"></iframe>
+
+        <div class="video-view" id="video-view">
+          <video id="demo-video" controls autoplay playsinline></video>
+        </div>
+
+        <div class="details-view" id="details-view">
+          <div class="details-section">
+            <h4>⚠️ Attack Mechanism & Impact</h4>
+            <p id="details-vuln-desc"></p>
+          </div>
+          <div class="details-section">
+            <h4>🛡️ Secure Remediation Architecture</h4>
+            <p id="details-fixed-desc"></p>
+          </div>
+          <div class="details-section">
+            <h4>🏷️ Associated Identifiers</h4>
+            <p id="details-cwe" style="font-family: var(--font-mono); color: #38bdf8;"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let modules = [];
+    let currentModule = null;
+    let currentTab = 'vuln';
+
+    async function init() {
+      try {
+        const res = await fetch('/api/modules');
+        modules = await res.json();
+        renderTiles(modules);
+      } catch (e) {
+        console.error("Failed to load modules:", e);
+      }
+    }
+
+    function renderTiles(list) {
+      const container = document.getElementById('tiles-container');
+      container.innerHTML = list.map(m => `
+        <div class="tile" onclick="onTileClick('${m.id}', event)">
+          <div class="tile-header">
+            <span class="owasp-tag">${m.code}</span>
+            <span class="category-pill">${m.category}</span>
+          </div>
+          <h3 class="tile-title">${m.name}</h3>
+          <p class="tile-desc">${m.shortSummary}</p>
+          <div class="tile-cwe">${m.cwe}</div>
+          <div class="tile-actions">
+            <button class="btn-vuln" onclick="event.stopPropagation(); launchModule('${m.id}', 'vuln')">
+              🔴 Vulnerable Demo
+            </button>
+            <button class="btn-fixed" onclick="event.stopPropagation(); launchModule('${m.id}', 'fixed')">
+              🟢 Fixed Version
+            </button>
+            <button class="btn-video" onclick="event.stopPropagation(); launchModule('${m.id}', 'video-vuln')">
+              🎬 Watch Video Walkthrough
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function onTileClick(id, event) {
+      // Default clicking the tile invokes the vulnerable demo in internal iframe
+      launchModule(id, 'vuln');
+    }
+
+    async function launchModule(id, tab = 'vuln') {
+      const mod = modules.find(m => m.id === id);
+      if (!mod) return;
+
+      currentModule = mod;
+      currentTab = tab;
+
+      // Update modal titles
+      document.getElementById('modal-code').textContent = mod.code;
+      document.getElementById('modal-title').textContent = mod.name;
+      document.getElementById('details-vuln-desc').textContent = mod.vulnDetails;
+      document.getElementById('details-fixed-desc').textContent = mod.remediationDetails;
+      document.getElementById('details-cwe').textContent = mod.cwe;
+
+      // Open Modal
+      document.getElementById('modal-backdrop').classList.add('active');
+
+      // Switch to selected tab
+      await switchViewerTab(tab);
+    }
+
+    async function switchViewerTab(tab) {
+      currentTab = tab;
+      const mod = currentModule;
+      if (!mod) return;
+
+      // Update tab active states
+      ['tab-vuln', 'tab-fixed', 'tab-video-vuln', 'tab-video-fixed', 'tab-details'].forEach(t => {
+        const el = document.getElementById(t);
+        if (el) el.classList.remove('active');
+      });
+
+      const activeBtn = document.getElementById(`tab-${tab}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const iframe = document.getElementById('demo-iframe');
+      const videoView = document.getElementById('video-view');
+      const video = document.getElementById('demo-video');
+      const detailsView = document.getElementById('details-view');
+      const modeBadge = document.getElementById('modal-mode-badge');
+      const extLink = document.getElementById('btn-external-link');
+
+      // Reset views
+      iframe.style.display = 'none';
+      videoView.classList.remove('active');
+      detailsView.classList.remove('active');
+      video.pause();
+
+      if (tab === 'vuln') {
+        modeBadge.className = 'mode-indicator vuln';
+        modeBadge.textContent = '🔴 VULNERABLE';
+        iframe.style.display = 'block';
+        await loadServiceIntoIframe(mod.id, 'vuln', mod.vulnPort);
+        extLink.href = `http://localhost:${mod.vulnPort}`;
+      } else if (tab === 'fixed') {
+        modeBadge.className = 'mode-indicator fixed';
+        modeBadge.textContent = '🟢 REMEDIATED';
+        iframe.style.display = 'block';
+        await loadServiceIntoIframe(mod.id, 'fixed', mod.fixedPort);
+        extLink.href = `http://localhost:${mod.fixedPort}`;
+      } else if (tab === 'video-vuln') {
+        modeBadge.className = 'mode-indicator vuln';
+        modeBadge.textContent = '🎬 ATTACK VIDEO';
+        videoView.classList.add('active');
+        video.src = mod.vulnVideo;
+        video.play().catch(() => {});
+        extLink.href = mod.vulnVideo;
+      } else if (tab === 'video-fixed') {
+        modeBadge.className = 'mode-indicator fixed';
+        modeBadge.textContent = '🛡️ DEFENSE VIDEO';
+        videoView.classList.add('active');
+        video.src = mod.fixedVideo;
+        video.play().catch(() => {});
+        extLink.href = mod.fixedVideo;
+      } else if (tab === 'details') {
+        modeBadge.className = 'mode-indicator';
+        modeBadge.style.background = 'rgba(56, 189, 248, 0.15)';
+        modeBadge.style.color = '#38bdf8';
+        modeBadge.textContent = '📖 ARCHITECTURE';
+        detailsView.classList.add('active');
+        extLink.href = '#';
+      }
+    }
+
+    async function loadServiceIntoIframe(id, type, port) {
+      const overlay = document.getElementById('loading-overlay');
+      const msg = document.getElementById('loading-msg');
+      const iframe = document.getElementById('demo-iframe');
+
+      overlay.classList.add('active');
+      msg.textContent = `Spinning up .NET ${type === 'vuln' ? 'Vulnerable' : 'Fixed'} service on port ${port}...`;
+
+      try {
+        const res = await fetch('/api/service/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, type })
+        });
+        const data = await res.json();
+
+        if (data.url) {
+          iframe.src = data.url;
+        } else {
+          iframe.src = `http://localhost:${port}`;
+        }
+      } catch (err) {
+        console.error("Start service error:", err);
+        iframe.src = `http://localhost:${port}`;
+      } finally {
+        setTimeout(() => {
+          overlay.classList.remove('active');
+        }, 600);
+      }
+    }
+
+    function reloadIframe() {
+      const iframe = document.getElementById('demo-iframe');
+      if (iframe && iframe.src) {
+        iframe.src = iframe.src;
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('modal-backdrop').classList.remove('active');
+      document.getElementById('demo-iframe').src = 'about:blank';
+      document.getElementById('demo-video').pause();
+    }
+
+    async function stopAllServices() {
+      if (!confirm("Are you sure you want to stop all active .NET demo backend services?")) return;
+      try {
+        const res = await fetch('/api/service/stop-all', { method: 'POST' });
+        const data = await res.json();
+        alert(`Successfully stopped ${data.stoppedCount || 0} services.`);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Close on backdrop click outside modal-container
+    document.getElementById('modal-backdrop').addEventListener('click', (e) => {
+      if (e.target.id === 'modal-backdrop') closeModal();
+    });
+
+    init();
+  </script>
+</body>
+</html>

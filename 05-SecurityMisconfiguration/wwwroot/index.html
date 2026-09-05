@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OWASP A05: Security Misconfiguration Demo</title>
+  <style>
+    :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --muted: #94a3b8; --border: #334155; --danger: #ef4444; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h1 { color: #f87171; font-size: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    button { background: #dc2626; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 0.8rem; }
+    button:hover { background: #b91c1c; }
+    .result { background: #0b0f19; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto; }
+    .alert { padding: 0.75rem 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.85rem; font-weight: 600; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; display: none; }
+    .alert.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>OWASP A05: Security Misconfiguration (Vulnerable Demo)</h1>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating unconditional Developer Exception Pages in production, permissive CORS, and exposed configuration secrets.</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">1. Verbose Stack Trace & Secret Leakage</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Developer Exception Page is active outside development. Triggering an unhandled exception leaks internal paths and connection strings.</p>
+      <button id="btn-leak" onclick="triggerLeak()">Trigger Unhandled Error</button>
+      <div id="alert-leak" class="alert">
+        🚨 VULNERABILITY CONFIRMED: Detailed developer exception page returned stack trace leaking database connection string with plaintext password ('DefaultPassword123!')!
+      </div>
+      <div class="result" id="res-leak">// Error output...</div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">2. Configuration Endpoint Leaking Admin Password</h2>
+      <button id="btn-config" onclick="fetchConfig()">Fetch /api/config/info</button>
+      <div id="alert-config" class="alert">
+        🚨 VULNERABILITY CONFIRMED: Default administrative credentials exposed from appsettings.json!
+      </div>
+      <div class="result" id="res-config">// Config output...</div>
+    </div>
+  </div>
+
+  <script>
+    async function triggerLeak() {
+      const res = await fetch("/api/data/debug-error");
+      const text = await res.text();
+      document.getElementById("res-leak").textContent = text.slice(0, 1000) + "...";
+      document.getElementById("alert-leak").classList.add("active");
+    }
+
+    async function fetchConfig() {
+      const res = await fetch("/api/config/info");
+      const data = await res.json();
+      document.getElementById("res-config").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-config").classList.add("active");
+    }
+  </script>
+</body>
+</html>

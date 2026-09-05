@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OWASP A05: Security Misconfiguration (Remediated)</title>
+  <style>
+    :root { --bg: #0b1329; --card: #152238; --text: #f8fafc; --muted: #94a3b8; --border: #243552; --success: #10b981; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h1 { color: #34d399; font-size: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    button { background: #059669; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 0.8rem; }
+    button:hover { background: #047857; }
+    .result { background: #070d1d; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; white-space: pre-wrap; word-break: break-all; }
+    .alert { padding: 0.75rem 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.85rem; font-weight: 600; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; display: none; }
+    .alert.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🛡️ Remediated: OWASP A05 Security Misconfiguration</h1>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating sanitized RFC 7807 error problem details, strict CORS origins, and injected security response headers.</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">1. Sanitized Production Error Handling</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Non-development environments route errors through <code>/error</code> returning clean problem details without exposing stack traces or connection secrets.</p>
+      <button id="btn-error" onclick="triggerSanitizedError()">Fetch Production /error Endpoint</button>
+      <div id="alert-error" class="alert">
+        🛡️ DEFENSE CONFIRMED: Generic RFC 7807 error detail returned without leaking stack traces, code lines, or connection strings!
+      </div>
+      <div class="result" id="res-error">// Error output...</div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">2. Security Response Headers Verification</h2>
+      <button id="btn-headers" onclick="checkHeaders()">Inspect Response Security Headers</button>
+      <div id="alert-headers" class="alert">
+        🛡️ DEFENSE CONFIRMED: Defense-in-depth headers present: X-Content-Type-Options (nosniff), X-Frame-Options (DENY), and Content-Security-Policy!
+      </div>
+      <div class="result" id="res-headers">// Security headers output...</div>
+    </div>
+  </div>
+
+  <script>
+    async function triggerSanitizedError() {
+      const res = await fetch("/error");
+      const data = await res.json();
+      document.getElementById("res-error").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-error").classList.add("active");
+    }
+
+    async function checkHeaders() {
+      const res = await fetch("/api/data/status");
+      const headers = {
+        "X-Content-Type-Options": res.headers.get("X-Content-Type-Options"),
+        "X-Frame-Options": res.headers.get("X-Frame-Options"),
+        "Content-Security-Policy": res.headers.get("Content-Security-Policy"),
+        "Referrer-Policy": res.headers.get("Referrer-Policy")
+      };
+      document.getElementById("res-headers").textContent = JSON.stringify(headers, null, 2);
+      document.getElementById("alert-headers").classList.add("active");
+    }
+  </script>
+</body>
+</html>

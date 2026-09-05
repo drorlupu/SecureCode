@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OWASP A02: Cryptographic Failures (Remediated)</title>
+  <style>
+    :root { --bg: #0b1329; --card: #152238; --text: #f8fafc; --muted: #94a3b8; --border: #243552; --success: #10b981; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h1 { color: #34d399; font-size: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    input { width: 100%; background: #0b1329; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; color: #fff; margin-top: 0.3rem; }
+    button { background: #059669; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+    button:hover { background: #047857; }
+    .result { background: #070d1d; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; white-space: pre-wrap; word-break: break-all; }
+    .alert { padding: 0.75rem 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.85rem; font-weight: 600; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; display: none; }
+    .alert.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🛡️ Remediated: OWASP A02 Cryptographic Failures</h1>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating PBKDF2-HMAC-SHA512 password hashing and authenticated AES-256-GCM encryption.</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem; margin-bottom:0.8rem;">1. Secure Registration (PBKDF2 & AES-256-GCM)</h2>
+      <div class="grid">
+        <div>
+          <label style="font-size:0.85rem; color:var(--muted)">Username:</label>
+          <input type="text" id="reg-user" value="secure-user" />
+        </div>
+        <div>
+          <label style="font-size:0.85rem; color:var(--muted)">Password (PBKDF2-SHA512 with Salt):</label>
+          <input type="text" id="reg-pass" value="password123" />
+        </div>
+      </div>
+      <div style="margin-top:0.8rem;">
+        <label style="font-size:0.85rem; color:var(--muted)">Credit Card (Encrypted with AES-256-GCM):</label>
+        <input type="text" id="reg-card" value="4111-2222-3333-4444" />
+      </div>
+      <button id="btn-register" onclick="registerUser()">Register with Secure Crypto</button>
+      <div id="alert-reg" class="alert">
+        🛡️ DEFENSE CONFIRMED: Password hashed with salted PBKDF2-SHA512 (100,000 iterations, resistant to rainbow tables and brute force). Credit card encrypted with authenticated AES-GCM with unique 12-byte random nonce and 16-byte auth tag.
+      </div>
+      <div class="result" id="res-reg">// Secure registration output...</div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem; margin-bottom:0.8rem;">2. Constant-Time Password Verification</h2>
+      <button id="btn-login" onclick="testLogin()">Verify Password via Secure Hasher</button>
+      <div id="alert-login" class="alert">
+        🛡️ DEFENSE CONFIRMED: Verified using `PasswordHasher<T>.VerifyHashedPassword` with constant-time equality checks preventing side-channel timing attacks.
+      </div>
+      <div class="result" id="res-login">// Verification output...</div>
+    </div>
+  </div>
+
+  <script>
+    async function registerUser() {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: document.getElementById("reg-user").value,
+          password: document.getElementById("reg-pass").value,
+          creditCard: document.getElementById("reg-card").value
+        })
+      });
+      const data = await res.json();
+      document.getElementById("res-reg").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-reg").classList.add("active");
+    }
+
+    async function testLogin() {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "secure-user",
+          password: "password123"
+        })
+      });
+      const data = await res.json();
+      document.getElementById("res-login").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-login").classList.add("active");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OWASP A08: Software & Data Integrity Failures (Remediated)</title>
+  <style>
+    :root { --bg: #0b1329; --card: #152238; --text: #f8fafc; --muted: #94a3b8; --border: #243552; --success: #10b981; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h1 { color: #34d399; font-size: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    textarea { width: 100%; background: #0b1329; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; color: #fff; font-family: monospace; font-size: 0.85rem; height: 90px; }
+    button { background: #059669; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 0.8rem; }
+    button:hover { background: #047857; }
+    .result { background: #070d1d; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; white-space: pre-wrap; word-break: break-all; }
+    .alert { padding: 0.75rem 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.85rem; font-weight: 600; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; display: none; }
+    .alert.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🛡️ Remediated: OWASP A08 Software & Data Integrity Failures</h1>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating strongly-typed System.Text.Json deserialization and cryptographic SHA-256 integrity verification.</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">1. Type-Safe Constrained Deserialization</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Deserialization binds strictly to sealed DTO <code>ApplicationStateDto</code>. Arbitrary polymorphic type resolution is disabled.</p>
+      <textarea id="json-input">{
+  "SessionId": "SECURE-SESSION-123",
+  "Preferences": { "theme": "dark", "locale": "en-US" }
+}</textarea>
+      <button id="btn-deserialize" onclick="testDeserialize()">Deserialize Safely</button>
+      <div id="alert-deserialize" class="alert">
+        🛡️ DEFENSE CONFIRMED: Safe strongly typed deserialization! Arbitrary '$type' metadata is ignored; gadget execution is eliminated.
+      </div>
+      <div class="result" id="res-deserialize">// Safe deserialization output...</div>
+    </div>
+  </div>
+
+  <script>
+    async function testDeserialize() {
+      const payload = document.getElementById("json-input").value;
+      const res = await fetch("/api/state/restore", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      document.getElementById("res-deserialize").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-deserialize").classList.add("active");
+    }
+  </script>
+</body>
+</html>

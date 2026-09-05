@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OWASP A04: Insecure Design (Remediated)</title>
+  <style>
+    :root { --bg: #0b1329; --card: #152238; --text: #f8fafc; --muted: #94a3b8; --border: #243552; --success: #10b981; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h1 { color: #34d399; font-size: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem; }
+    input { width: 100%; background: #0b1329; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; color: #fff; }
+    button { background: #059669; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 0.8rem; }
+    button:hover { background: #047857; }
+    .result { background: #070d1d; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; white-space: pre-wrap; word-break: break-all; }
+    .alert { padding: 0.75rem 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.85rem; font-weight: 600; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; display: none; }
+    .alert.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🛡️ Remediated: OWASP A04 Insecure Design</h1>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating server-side authoritative pricing and strict numeric boundary validation.</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">1. Authoritative Server Pricing</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Client only passes <code>ProductId</code> and <code>Quantity</code>. Price is computed strictly from authoritative server catalog ($999.00).</p>
+      <div class="grid">
+        <div>
+          <label style="font-size:0.85rem; color:var(--muted)">Product ID:</label>
+          <input type="number" id="buy-id" value="101" />
+        </div>
+        <div>
+          <label style="font-size:0.85rem; color:var(--muted)">Quantity:</label>
+          <input type="number" id="buy-qty" value="1" />
+        </div>
+      </div>
+      <button id="btn-purchase" onclick="purchaseItem()">Purchase via Authoritative Pricing</button>
+      <div id="alert-price" class="alert">
+        🛡️ DEFENSE CONFIRMED: Price calculated authoritatively by server ($999.00); client cannot manipulate price.
+      </div>
+      <div class="result" id="res-price">// Secure purchase output...</div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">2. Numeric Range Validation Defense</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Client attempts to submit <code>Quantity: -5</code>. Server rejects with HTTP 400.</p>
+      <button id="btn-negative" onclick="negativePurchase()">Test Negative Quantity (-5)</button>
+      <div id="alert-neg" class="alert">
+        🛡️ DEFENSE CONFIRMED: HTTP 400 Bad Request! Negative quantities rejected by server-side validation.
+      </div>
+      <div class="result" id="res-neg">// Validation output...</div>
+    </div>
+  </div>
+
+  <script>
+    async function purchaseItem() {
+      const res = await fetch("/api/checkout/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: parseInt(document.getElementById("buy-id").value),
+          quantity: parseInt(document.getElementById("buy-qty").value)
+        })
+      });
+      const data = await res.json();
+      document.getElementById("res-price").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-price").classList.add("active");
+    }
+
+    async function negativePurchase() {
+      const res = await fetch("/api/checkout/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: 101,
+          quantity: -5
+        })
+      });
+      const data = await res.json();
+      document.getElementById("res-neg").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-neg").classList.add("active");
+    }
+  </script>
+</body>
+</html>

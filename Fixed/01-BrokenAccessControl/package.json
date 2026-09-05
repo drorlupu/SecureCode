@@ -1,0 +1,8 @@
+{
+  "name": "broken-access-control-fixed-demo",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "playwright": "^1.63.0"
+  }
+}

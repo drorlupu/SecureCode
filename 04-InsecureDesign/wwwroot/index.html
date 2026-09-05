@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OWASP A04: Insecure Design Demo</title>
+  <style>
+    :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --muted: #94a3b8; --border: #334155; --danger: #ef4444; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h1 { color: #f87171; font-size: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem; }
+    input { width: 100%; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem; color: #fff; }
+    button { background: #dc2626; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 0.8rem; }
+    button:hover { background: #b91c1c; }
+    .result { background: #0b0f19; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; white-space: pre-wrap; word-break: break-all; }
+    .alert { padding: 0.75rem 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.85rem; font-weight: 600; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; display: none; }
+    .alert.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>OWASP A04: Insecure Design (Vulnerable Demo)</h1>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating business logic flaws: client-controlled pricing, negative quantity checkout, and unconstrained coupon replay.</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">1. Client-Controlled Price Manipulation</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Product 101 (Enterprise Cloud License) costs $999.00 on the server. The client specifies <code>ClientSpecifiedPrice: 0.01</code>.</p>
+      <div class="grid">
+        <div>
+          <label style="font-size:0.85rem; color:var(--muted)">Product ID:</label>
+          <input type="number" id="buy-id" value="101" />
+        </div>
+        <div>
+          <label style="font-size:0.85rem; color:var(--muted)">Client-Specified Unit Price ($):</label>
+          <input type="text" id="buy-price" value="0.01" />
+        </div>
+      </div>
+      <button id="btn-purchase" onclick="purchaseItem()">Purchase for $0.01</button>
+      <div id="alert-price" class="alert">
+        🚨 VULNERABILITY CONFIRMED: Server accepted client-controlled price ($0.01) instead of authoritative database catalog price ($999.00)!
+      </div>
+      <div class="result" id="res-price">// Purchase output...</div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">2. Negative Quantity Refund Exploit</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Client submits <code>Quantity: -5</code>. Lack of bounds validation creates an order with a negative total balance.</p>
+      <button id="btn-negative" onclick="negativePurchase()">Submit Negative Quantity (-5)</button>
+      <div id="alert-neg" class="alert">
+        🚨 VULNERABILITY CONFIRMED: Negative order quantity allowed total amount of -$4,995.00 (refund exploit)!
+      </div>
+      <div class="result" id="res-neg">// Negative quantity output...</div>
+    </div>
+  </div>
+
+  <script>
+    async function purchaseItem() {
+      const res = await fetch("/api/checkout/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: parseInt(document.getElementById("buy-id").value),
+          quantity: 1,
+          clientSpecifiedPrice: parseFloat(document.getElementById("buy-price").value)
+        })
+      });
+      const data = await res.json();
+      document.getElementById("res-price").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-price").classList.add("active");
+    }
+
+    async function negativePurchase() {
+      const res = await fetch("/api/checkout/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: 101,
+          quantity: -5,
+          clientSpecifiedPrice: 999.00
+        })
+      });
+      const data = await res.json();
+      document.getElementById("res-neg").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-neg").classList.add("active");
+    }
+  </script>
+</body>
+</html>

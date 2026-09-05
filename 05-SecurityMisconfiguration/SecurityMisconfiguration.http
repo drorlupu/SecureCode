@@ -1,0 +1,6 @@
+@SecurityMisconfiguration_HostAddress = http://localhost:5285
+
+GET {{SecurityMisconfiguration_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

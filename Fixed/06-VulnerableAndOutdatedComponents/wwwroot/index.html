@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OWASP A06: Vulnerable & Outdated Components (Remediated)</title>
+  <style>
+    :root { --bg: #0b1329; --card: #152238; --text: #f8fafc; --muted: #94a3b8; --border: #243552; --success: #10b981; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h1 { color: #34d399; font-size: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    button { background: #059669; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 0.8rem; }
+    button:hover { background: #047857; }
+    .result { background: #070d1d; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; white-space: pre-wrap; word-break: break-all; }
+    .alert { padding: 0.75rem 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.85rem; font-weight: 600; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; display: none; }
+    .alert.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🛡️ Remediated: OWASP A06 Vulnerable & Outdated Components</h1>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating patched dependencies (Newtonsoft.Json 13.0.3) and automated build-time NuGetAudit enforcement.</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">1. Clean Dependency Audit Verification</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Package upgraded to <code>Newtonsoft.Json 13.0.3</code> and build configured with <code>&lt;NuGetAudit&gt;true&lt;/NuGetAudit&gt;</code>.</p>
+      <button id="btn-audit" onclick="runAudit()">Verify Dependency Security</button>
+      <div id="alert-audit" class="alert">
+        🛡️ DEFENSE CONFIRMED: Dependency upgraded to secure patched release 13.0.3! 0 known vulnerabilities found.
+      </div>
+      <div class="result" id="res-audit">// Audit output...</div>
+    </div>
+  </div>
+
+  <script>
+    async function runAudit() {
+      const res = await fetch("/api/audit/status");
+      const data = await res.json();
+      document.getElementById("res-audit").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("alert-audit").classList.add("active");
+    }
+  </script>
+</body>
+</html>

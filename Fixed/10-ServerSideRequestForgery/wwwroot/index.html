@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OWASP A10: Server-Side Request Forgery (Fixed)</title>
+  <style>
+    :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --muted: #94a3b8; --border: #334155; --success: #22c55e; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    h1 { color: #4ade80; font-size: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    input { width: 100%; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 0.6rem; border-radius: 6px; margin-top: 0.5rem; font-family: monospace; }
+    button { background: #16a34a; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 0.8rem; }
+    button:hover { background: #15803d; }
+    .result { background: #0b0f19; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.85rem; margin-top: 1rem; white-space: pre-wrap; word-break: break-all; }
+    .alert { padding: 0.75rem 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.85rem; font-weight: 600; background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #86efac; display: none; }
+    .alert.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>OWASP A10: Server-Side Request Forgery (Remediated Fixed Version)</h1>
+      <p style="color:var(--muted); font-size:0.9rem; margin-top:0.3rem;">Demonstrating IP address validation, RFC 1918 / loopback blocking, and content-type enforcement.</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;">SSRF Defense: Block Internal IP & Loopback Exploitation</h2>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.3rem;">Attempting to fetch internal services or loopback IPs is intercepted and rejected with HTTP 403.</p>
+      
+      <label style="font-size:0.85rem; color:var(--muted);">Prohibited Target URL (Loopback / Cloud Metadata):</label>
+      <input id="targetUrl" value="http://localhost:5024/internal/admin/cloud-credentials" />
+      
+      <button id="btn-fetch" onclick="fetchAvatar()">Attempt SSRF Request</button>
+      
+      <div id="alert-ssrf" class="alert">
+        🛡️ REMEDIATION VERIFIED: SSRF Filter blocked internal request (HTTP 403 Forbidden - Access to private or loopback range prohibited)!
+      </div>
+      <div class="result" id="res-fetch">// Response content will appear here...</div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchAvatar() {
+      const url = document.getElementById("targetUrl").value;
+      const res = await fetch("/api/avatar/fetch-remote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: url })
+      });
+      const data = await res.json();
+      document.getElementById("res-fetch").textContent = JSON.stringify(data, null, 2);
+      if (res.status === 403 || res.status === 400) {
+        document.getElementById("alert-ssrf").classList.add("active");
+      }
+    }
+  </script>
+</body>
+</html>
