@@ -1,9 +1,17 @@
 using System.Collections.Concurrent;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSignalR();
+// SignalR with IIS-resilient keepalive and client timeout
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -16,6 +24,12 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Forwarded headers support for reverse proxies and IIS
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 app.UseCors();
 app.UseDefaultFiles();

@@ -855,10 +855,23 @@
     let playerTimer = null;
     let timeRemaining = 20;
 
-    const hubUrl = (window.location.port === "5055" || window.location.port === "") ? "/quizhub" : "http://localhost:5055/quizhub";
+    function resolveHubUrl() {
+      // 1. If embedded or proxied from MasterApp on port 5050 without /quiz path
+      if (window.location.port === "5050" && !window.location.pathname.includes("/quiz")) {
+        return "http://localhost:5055/quizhub";
+      }
+
+      // 2. Dynamically resolve relative to current path for IIS hosting
+      // Works seamlessly whether hosted at IIS root (/) or in a Virtual Application (/quiz/ or /apps/quiz/)
+      const pathname = window.location.pathname;
+      const basePath = pathname.replace(/\/[^\/]*\.[^\/]*$/, '').replace(/\/+$/, '');
+      return basePath ? `${basePath}/quizhub` : '/quizhub';
+    }
+
+    const hubUrl = resolveHubUrl();
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl)
-      .withAutomaticReconnect()
+      .withAutomaticReconnect([0, 2000, 5000, 10000])
       .build();
 
     function showScreen(id) {
