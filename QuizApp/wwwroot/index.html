@@ -627,6 +627,7 @@
          ========================================== -->
     <div class="screen" id="host-question">
       <div class="host-q-header">
+        <div class="pin-pill" id="host-q-num" style="background: rgba(255,255,255,0.25); font-weight: 800;">Question 1 of 20</div>
         <div class="pin-pill" id="host-q-category">Access Control</div>
         <div class="timer-badge" id="host-timer">20</div>
         <div style="display: flex; align-items: center; gap: 0.6rem;">
@@ -676,7 +677,7 @@
       <div class="host-card" style="max-width: 650px;">
         <h2 style="font-size: 2rem; font-weight: 900; margin-bottom: 1.5rem;">🔥 Real Leaderboard</h2>
         <div id="host-lb-list" style="display: flex; flex-direction: column; gap: 0.6rem;"></div>
-        <button class="btn-start-game" style="margin-top: 2rem;" onclick="hostNextQuestionOrFinish()">Next Question ➡️</button>
+        <button id="btn-host-next-q" class="btn-start-game" style="margin-top: 2rem;" onclick="hostNextQuestionOrFinish()">Next Question ➡️</button>
       </div>
     </div>
 
@@ -856,6 +857,7 @@
     let myNickname = "";
     let myScore = 0;
     let currentQIndex = 0;
+    let totalQuestions = 20;
     let totalRoomPlayers = 0;
     let hostTimer = null;
     let playerTimer = null;
@@ -1169,12 +1171,13 @@
 
     connection.on("QuestionStarted", (qData) => {
       currentQIndex = qData.index;
+      totalQuestions = qData.total || 20;
       totalRoomPlayers = qData.totalPlayers || 0;
 
       if (!isHost) {
         // Player view: show 4 big cards with shapes and colors
         const qNumEl = document.getElementById('player-q-num');
-        if (qNumEl) qNumEl.textContent = `Question ${qData.index + 1} of ${qData.total}`;
+        if (qNumEl) qNumEl.textContent = `Question ${qData.index + 1} of ${totalQuestions}`;
         for (let i = 0; i < 4; i++) {
           const b = document.getElementById(`p-btn-${i}`);
           if (b) {
@@ -1217,7 +1220,9 @@
           }
         }, 1000);
       } else {
-        // Host view: show prompt and timer
+        // Host view: show prompt, question number, category and timer
+        const hostQNumEl = document.getElementById('host-q-num');
+        if (hostQNumEl) hostQNumEl.textContent = `Question ${qData.index + 1} of ${totalQuestions}`;
         document.getElementById('host-q-category').textContent = qData.category;
         document.getElementById('host-prompt').textContent = qData.prompt;
         for (let i = 0; i < 4; i++) {
@@ -1316,7 +1321,7 @@
 
         const letters = ["▲ Option A", "◆ Option B", "● Option C", "■ Option D"];
         document.getElementById('host-correct-answer').textContent = letters[data.correctIndex];
-        document.getElementById('host-explanation').textContent = data.explanation;
+        document.getElementById('host-explanation').innerHTML = data.explanation;
         document.getElementById('host-reveal-card').style.display = 'block';
       }
     });
@@ -1331,6 +1336,17 @@
             <span style="font-family: var(--mono); color: #facc15;">${p.score.toLocaleString()} pts</span>
           </div>
         `).join('');
+
+        const nextBtn = document.getElementById('btn-host-next-q');
+        if (nextBtn) {
+          if (currentQIndex + 1 >= totalQuestions) {
+            nextBtn.textContent = "🏆 View Grand Champions Podium";
+            nextBtn.style.background = "#eab308";
+          } else {
+            nextBtn.textContent = `Next Question (${currentQIndex + 2} of ${totalQuestions}) ➡️`;
+            nextBtn.style.background = "#46178f";
+          }
+        }
         showScreen('host-leaderboard');
       } else {
         const myPlayer = leaderboard.find(p => p.nickname === myNickname);
@@ -1448,7 +1464,7 @@
     }
 
     async function hostNextQuestionOrFinish() {
-      if (currentQIndex + 1 < 8) {
+      if (currentQIndex + 1 < totalQuestions) {
         currentQIndex++;
         await connection.invoke("StartQuestion", roomPin, currentQIndex);
       } else {
