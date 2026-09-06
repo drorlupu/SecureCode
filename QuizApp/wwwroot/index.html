@@ -7,7 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
-  <script src="/js/signalr.min.js"></script>
+  <script>
+    // Ensure trailing slash for IIS virtual applications so relative paths resolve cleanly
+    if (!window.location.pathname.endsWith('/') && !window.location.pathname.split('/').pop().includes('.')) {
+      window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+    }
+  </script>
+  <script src="js/signalr.min.js"></script>
   <style>
     :root {
       --bg: #46178f;
